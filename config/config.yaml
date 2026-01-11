@@ -1,0 +1,89 @@
+app:
+  name: "Social Content Archiver"
+  version: "0.1.0"
+
+collectors:
+  enabled_platforms:
+    - instagram
+    - facebook
+    - linkedin
+    - beeper
+
+  sync_interval: 3600  # seconds
+
+  instagram:
+    max_posts_per_sync: 100
+    download_stories: true
+    download_highlights: true
+
+  facebook:
+    max_posts_per_sync: 100
+    include_photos: true
+    include_videos: true
+
+  linkedin:
+    max_posts_per_sync: 50
+    include_articles: true
+
+  beeper:
+    notes_only: true
+    sync_threads: false
+
+processors:
+  transcription:
+    enabled: true
+    model: "whisper-1"  # OpenAI Whisper model
+    language: "auto"
+
+  visual_analysis:
+    enabled: true
+    extract_text: true  # OCR
+    detect_objects: true
+    analyze_context: true
+
+  content_analysis:
+    enabled: true
+    extract_entities: true
+    sentiment_analysis: true
+    key_phrases: true
+
+tagging:
+  auto_tagging: true
+  min_confidence: 0.7
+  max_tags_per_content: 10
+
+  tag_sources:
+    - content_text
+    - transcription
+    - visual_context
+    - metadata
+
+knowledge_base:
+  aggregation:
+    min_related_items: 2
+    similarity_threshold: 0.75
+
+  synthesis:
+    enabled: true
+    summary_length: "medium"  # short, medium, long
+    include_sources: true
+
+  filtering:
+    fact_checking: true
+    remove_duplicates: true
+    min_quality_score: 0.6
+
+storage:
+  database:
+    type: "sqlite"
+    backup_enabled: true
+    backup_interval: 86400  # daily
+
+  cache:
+    enabled: true
+    ttl: 3600
+
+  media:
+    compress_images: true
+    compress_videos: true
+    max_media_size_mb: 100
