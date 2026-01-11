@@ -1,0 +1,88 @@
+# .claudeignore
+# Files and directories that Claude Code should ignore when analyzing the project
+
+# Environment and secrets
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+.virtualenv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+data/
+*.db-journal
+
+# Media files (can be large)
+media/
+downloads/
+*.mp4
+*.mp3
+*.wav
+*.mov
+*.avi
+
+# Logs
+logs/
+*.log
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Coverage and test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Documentation build
+docs/_build/
+site/
+
+# Large model files
+*.bin
+*.pkl
+*.model
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Git
+.git/
+
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# OS
+Thumbs.db
