@@ -1,0 +1,76 @@
+services:
+  # ===========================================
+  # Social Content Archiver - Main Application
+  # ===========================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: social-archiver
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=sqlite:////app/data/archive.db
+      - REDIS_URL=redis://redis:6379/0
+      - ARCHIVE_PATH=/app/archives
+      - MEDIA_PATH=/app/media
+      - LLM_PROVIDER=${LLM_PROVIDER:-openai}
+      - OLLAMA_BASE_URL=http://ollama:11434/v1
+      - TRANSCRIPTION_PROVIDER=${TRANSCRIPTION_PROVIDER:-openai}
+    volumes:
+      - archiver-data:/app/data
+      - archiver-archives:/app/archives
+      - archiver-media:/app/media
+      - archiver-logs:/app/logs
+      - ./config:/app/config:ro
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===========================================
+  # Redis - Caching Layer
+  # ===========================================
+  redis:
+    image: redis:7-alpine
+    container_name: social-archiver-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  # ===========================================
+  # Ollama - Local LLM Server (optional)
+  # Start with: docker compose --profile local up
+  # ===========================================
+  ollama:
+    image: ollama/ollama:latest
+    container_name: social-archiver-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    profiles:
+      - local
+    restart: unless-stopped
+
+volumes:
+  archiver-data:
+  archiver-archives:
+  archiver-media:
+  archiver-logs:
+  redis-data:
+  ollama-models:
