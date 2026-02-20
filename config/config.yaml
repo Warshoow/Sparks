@@ -2,6 +2,18 @@ app:
   name: "Social Content Archiver"
   version: "0.1.0"
 
+# LLM Provider Configuration
+# Set LLM_PROVIDER env var to switch: "openai" (cloud) or "ollama" (local)
+providers:
+  openai:
+    chat_model: "gpt-4o-mini"
+    vision_model: "gpt-4o-mini"
+
+  ollama:
+    base_url: "http://localhost:11434/v1"
+    chat_model: "llama3.3"
+    vision_model: "llava"
+
 collectors:
   enabled_platforms:
     - instagram
@@ -32,8 +44,14 @@ collectors:
 processors:
   transcription:
     enabled: true
-    model: "whisper-1"  # OpenAI Whisper model
+    # Set TRANSCRIPTION_PROVIDER env var: "openai" or "faster-whisper"
+    model: "whisper-1"  # OpenAI Whisper model name
     language: "auto"
+    # Faster-Whisper settings (used when TRANSCRIPTION_PROVIDER=faster-whisper)
+    faster_whisper:
+      model_size: "small"     # tiny, base, small, medium, large-v3
+      device: "cpu"           # cpu or cuda
+      compute_type: "int8"    # int8 for CPU, float16 for GPU
 
   visual_analysis:
     enabled: true

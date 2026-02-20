@@ -1,9 +1,8 @@
 """Synthesizes content clusters into coherent knowledge"""
 from typing import List, Optional, Dict
 from loguru import logger
-import openai
 
-from ..config import settings, config
+from ..config import config, get_llm_client, get_chat_model
 from ..models import KnowledgeCluster, Content, ProcessedContent, ContentQuality
 
 
@@ -11,7 +10,7 @@ class ContentSynthesizer:
     """Synthesizes multiple related content pieces into coherent knowledge"""
 
     def __init__(self):
-        self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        self.client = get_llm_client()
         self.summary_length = config["knowledge_base"]["synthesis"]["summary_length"]
         self.include_sources = config["knowledge_base"]["synthesis"]["include_sources"]
         self.fact_checking_enabled = config["knowledge_base"]["filtering"]["fact_checking"]
@@ -109,7 +108,7 @@ Create a coherent, well-structured synthesis that:
 The synthesis should be comprehensive yet concise, focusing on extracting real value and insights."""
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=get_chat_model(),
                 messages=[
                     {
                         "role": "system",
@@ -149,7 +148,7 @@ The synthesis should be comprehensive yet concise, focusing on extracting real v
 Focus on the key insights and main takeaways."""
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=get_chat_model(),
                 messages=[
                     {
                         "role": "system",
@@ -234,7 +233,7 @@ Respond in JSON format:
 }}"""
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=get_chat_model(),
                 messages=[
                     {
                         "role": "system",

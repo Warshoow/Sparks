@@ -1,9 +1,8 @@
 """Content analysis for extracting entities, sentiment, and key phrases"""
 from typing import List, Dict, Any, Optional
 from loguru import logger
-import openai
 
-from ..config import settings, config
+from ..config import config, get_llm_client, get_chat_model
 from ..models import ProcessedContent, Content
 
 
@@ -11,7 +10,7 @@ class ContentAnalyzer:
     """Analyzes text content for entities, sentiment, and key information"""
 
     def __init__(self):
-        self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        self.client = get_llm_client()
         self.extract_entities = config["processors"]["content_analysis"]["extract_entities"]
         self.sentiment_analysis = config["processors"]["content_analysis"]["sentiment_analysis"]
         self.key_phrases = config["processors"]["content_analysis"]["key_phrases"]
@@ -30,7 +29,7 @@ Text: {text}
 Format your response as JSON with keys: entities, sentiment, sentiment_score, key_phrases, topics"""
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=get_chat_model(),
                 messages=[
                     {"role": "system", "content": "You are a helpful assistant that analyzes text content."},
                     {"role": "user", "content": prompt}

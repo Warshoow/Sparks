@@ -1,10 +1,9 @@
 """Content tagging and categorization"""
 from typing import List, Optional
 from loguru import logger
-import openai
 from sentence_transformers import SentenceTransformer
 
-from ..config import settings, config
+from ..config import config, get_llm_client, get_chat_model
 from ..models import Content, ProcessedContent, Tag, TaggedContent
 
 
@@ -12,7 +11,7 @@ class ContentTagger:
     """Automatically tags content based on analysis"""
 
     def __init__(self):
-        self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        self.client = get_llm_client()
         self.min_confidence = config["tagging"]["min_confidence"]
         self.max_tags = config["tagging"]["max_tags_per_content"]
 
@@ -67,7 +66,7 @@ artificial_intelligence: 0.88
 """
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=get_chat_model(),
                 messages=[
                     {
                         "role": "system",

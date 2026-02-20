@@ -5,16 +5,15 @@ from loguru import logger
 import base64
 import cv2
 from PIL import Image
-import openai
 
-from ..config import settings, config
+from ..config import config, get_llm_client, get_vision_model
 
 
 class VisualAnalysisProcessor:
     """Processes images and videos for visual content analysis"""
 
     def __init__(self):
-        self.client = openai.OpenAI(api_key=settings.openai_api_key)
+        self.client = get_llm_client()
         self.extract_text_enabled = config["processors"]["visual_analysis"]["extract_text"]
         self.detect_objects_enabled = config["processors"]["visual_analysis"]["detect_objects"]
         self.analyze_context_enabled = config["processors"]["visual_analysis"]["analyze_context"]
@@ -44,7 +43,7 @@ class VisualAnalysisProcessor:
                 image_data = base64.b64encode(image_file.read()).decode('utf-8')
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=get_vision_model(),
                 messages=[
                     {
                         "role": "user",
